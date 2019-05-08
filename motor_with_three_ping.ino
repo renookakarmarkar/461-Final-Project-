@@ -1,7 +1,6 @@
-const int pingPin = 7; //mid sensor is pin 7
-const int pingPin1 = 10; //right sensor pin 10
-const int pingPin2_trig = 2; // trigger left sensor 
-const int pingPin2_echo = 3; // echo left sensor 
+const int pingPin = 7; //mid sensor is pin 7 -> P4.6
+const int pingPin1 = 10; //right sensor pin 10 ->P1.5 
+const int pingPin2 = 3; // left sensor pin 3 -> P3.2 
 int objectDetectedMid;
 int objectDetectedLeft;
 int objectDetectedRight; 
@@ -12,6 +11,7 @@ int getDistanceRight();
 void Motor_Forward();
 void Motor_Reverse();
 void Motor_Stop();
+void Motor_Enable();
 void Turn_Left();
 void Turn_Right();
 void AvoidObjectMid();
@@ -61,225 +61,145 @@ long microsecondsToCentimeters(long microseconds)
 }
 
 
-
-int getDistanceMid(){ 
-
-  pinMode(pingPin, OUTPUT);
-  digitalWrite(pingPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(pingPin, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(pingPin, LOW);
-  
-  pinMode(pingPin, INPUT);
-  duration = pulseIn(pingPin, HIGH);
-
-  inches = microsecondsToInches(duration);
-  cm = microsecondsToCentimeters(duration);
-
-  Serial.print("mid: ");
-  Serial.print(inches);
-  Serial.print("in, ");
-  Serial.println();
-
-  delay(100);
-
-  return inches; 
+void Motor_Enable(){
+  digitalWrite(MOTOR_L_SLP_PIN, HIGH);
+  digitalWrite(MOTOR_R_SLP_PIN, HIGH);
 }
 
-
-int getDistanceRight(){
-  
-  pinMode(pingPin1, OUTPUT);
-  digitalWrite(pingPin1, LOW);
-  delayMicroseconds(2);
-  digitalWrite(pingPin1, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(pingPin1, LOW);
-  
-  pinMode(pingPin1, INPUT);
-  duration = pulseIn(pingPin1, HIGH);
-
-  inches = microsecondsToInches(duration);
-  cm = microsecondsToCentimeters(duration);
-
-  Serial.print("right: ");
-  Serial.print(inches);
-  Serial.print("in, ");
-  Serial.println();
-
-  delay(100);
-
-  return inches; 
-  
-}
-
-int getDistanceLeft(){
-  
-  pinMode(pingPin2_echo, INPUT);
-  pinMode(pingPin2_trig, OUTPUT);
-  digitalWrite(pingPin2_trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(pingPin2_trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(pingPin2_trig, LOW);
-  
-  duration = pulseIn(pingPin2_echo, HIGH);
-
-  inches = microsecondsToInches(duration);
-  cm = microsecondsToCentimeters(duration);
-
-  Serial.print("left: ");
-  Serial.print(inches);
-  Serial.print("in, ");
-  Serial.println();
-
-  delay(100);
-
-  return inches; 
-}
-
-void checkDistance(){
-  
-  distancemid = getDistanceMid();
-  distanceleft = getDistanceLeft();
-  distanceright = getDistanceRight();
-
-  //check middle ping
-
-  if(distancemid < 10){
-    objectDetectedMid = 1;
-  }
-  else{
-    objectDetectedMid = 0;
-  }
-
-  if(distanceleft < 10){
-    objectDetectedLeft = 1;
-  }else{
-    objectDetectedLeft = 0;
-  }
-
-  if(distanceright < 10){
-    objectDetectedRight = 1;
-  }else{
-    objectDetectedRight  = 0;
-  }
-}
 void Motor_Forward(){
-  digitalWrite(MOTOR_L_DIR_PIN, 0);
-  digitalWrite(MOTOR_R_DIR_PIN, 0);
-  analogWrite(MOTOR_L_PWM_PIN, 50);
-  analogWrite(MOTOR_R_PWM_PIN, 50);
+  Motor_Enable();
+  analogWrite(MOTOR_L_PWM_PIN, 30);
+  analogWrite(MOTOR_R_PWM_PIN, 30);
+  digitalWrite(MOTOR_L_DIR_PIN, LOW);
+  digitalWrite(MOTOR_R_DIR_PIN, LOW);
 
-  delay(100);
-
-  
+  delay(3000);
 }
 
 void Motor_Reverse(){
   Serial.print("reverse");
   Serial.println();
-  digitalWrite(MOTOR_L_DIR_PIN, 1);
-  digitalWrite(MOTOR_R_DIR_PIN, 1);
-  analogWrite(MOTOR_L_PWM_PIN, 50);
-  analogWrite(MOTOR_R_PWM_PIN, 50);
-
-  delay(100);
-
-
+  Motor_Enable();
+  analogWrite(MOTOR_L_PWM_PIN, 30);
+  analogWrite(MOTOR_R_PWM_PIN, 30);
+  digitalWrite(MOTOR_L_DIR_PIN, HIGH);
+  digitalWrite(MOTOR_R_DIR_PIN, HIGH);
+  delay(3000);
 }
 
 void Turn_Left(){
-   digitalWrite(MOTOR_R_DIR_PIN, 1);
-   digitalWrite(MOTOR_L_SLP_PIN, 1);
-   analogWrite(MOTOR_R_PWM_PIN, 50);
+  Motor_Enable();
+  analogWrite(MOTOR_R_PWM_PIN, 70);
+  analogWrite(MOTOR_L_PWM_PIN, 30);
+
+  delay(3000);
 }
 
 void Turn_Right(){
-   digitalWrite(MOTOR_L_DIR_PIN, 1);
-   digitalWrite(MOTOR_R_SLP_PIN, 1);
-   analogWrite(MOTOR_R_PWM_PIN, 50);
+   Motor_Enable();
+   Serial.println("execute");
+   analogWrite(MOTOR_R_PWM_PIN, 30);
+   analogWrite(MOTOR_L_PWM_PIN, 70);
+
+   delay(3000);
 }
 
 void Motor_Stop(){
-   digitalWrite(MOTOR_L_DIR_PIN, 0);
-   digitalWrite(MOTOR_R_SLP_PIN, 0);
+   digitalWrite(MOTOR_L_SLP_PIN, LOW);
+   digitalWrite(MOTOR_R_SLP_PIN, LOW);
+
+   delay(1000); 
 }
 
 
 void AvoidObjectMid(){
 
   if(distanceleft < distanceright){
+    Serial.print("mid turning right");
+    Serial.println();
+    Motor_Reverse();
+    Motor_Stop();
+    digitalWrite(MOTOR_L_DIR_PIN, LOW);
+    digitalWrite(MOTOR_R_DIR_PIN, LOW);
     Turn_Right();
   }else{
+    Serial.print("mid turning left");
+    Serial.println();
+    Motor_Reverse();
+    Motor_Stop();
+    digitalWrite(MOTOR_L_DIR_PIN, LOW);
+    digitalWrite(MOTOR_R_DIR_PIN, LOW);
     Turn_Left();
   }
 
-  while(objectDetectedMid == 1){
-    checkDistance(); //i think this should be here, wasn't in the code online 
-  }
+//  while(objectDetectedMid == 1){
+//    //checkDistance already running 
+//  }
 
+  Serial.println("stop mid");
   Motor_Stop();
-
-  delay(250);
   
 }
 
 void AvoidObjectLeft(){
 
+  Serial.println("stop left");
   Motor_Stop();
+  Serial.print("turning right");
+  Serial.println();
   Turn_Right();
 
-  while(objectDetectedLeft == 1){
-    checkDistance();  //i think this should be here, wasn't in the code online 
-  }
+//  while(objectDetectedLeft == 1){
+//    //checkDistance already running 
+//  }
 
   Motor_Stop();
-  delay(250);
 }
 
 void AvoidObjectRight(){
 
+  Serial.println("stop right");
   Motor_Stop();
   delay(250);
+  Serial.print("turning left");
+  Serial.println();
   Turn_Left();
 
-  while(objectDetectedRight == 1){
-    checkDistance();
-  }
+//  while(objectDetectedRight == 1){
+//    //checkDistance already running 
+//  }
 
   Motor_Stop();
-  delay(250);
-  
-  
 }
+
 void loop() {
   // put your main code here, to run repeatedly: 
 
-   checkDistance(); //gets the distance of all ping sensors and sets value of objectDetected
+   //checkDistance(); //gets the distance of all ping sensors and sets value of objectDetected
    
+    //delay(500);
 
+  
   while(1)
   {
 
-    if(objectDetectedMid == 1){
+   if(objectDetectedMid == 1){
       Serial.print("objMid: ");
       Serial.print(objectDetectedMid);
       AvoidObjectMid();
-      delay(250);
+      //delay(250);
     }
     else if(objectDetectedLeft == 1){
       Serial.print("objLeft: ");
       Serial.print(objectDetectedLeft);
       AvoidObjectLeft();
-      delay(250);
+      //delay(250);
     }
     else if (objectDetectedRight == 1){
       Serial.print("objRight: ");
       Serial.print(objectDetectedRight);
       AvoidObjectRight();
-      delay(250);
+      //delay(250);
     }
     else{
       Motor_Forward();
