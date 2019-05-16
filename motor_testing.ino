@@ -13,45 +13,60 @@ void setup() {
   pinMode(MOTOR_R_SLP_PIN, INPUT);
   pinMode(MOTOR_L_PWM_PIN, INPUT);
   pinMode(MOTOR_R_PWM_PIN, INPUT);
+  
+  Serial.begin(9600);
 }
 
 void loop() {
 
-  //Left wheel forward
-  digitalWrite(MOTOR_L_DIR_PIN, 1);
-  digitalWrite(MOTOR_R_SLP_PIN, 1);
-  analogWrite(MOTOR_L_PWM_PIN, 50);
+  //enable motors 
+  digitalWrite(MOTOR_L_SLP_PIN, HIGH);
+  digitalWrite(MOTOR_R_SLP_PIN, HIGH);
   
+  //set speed 
+  analogWrite(MOTOR_L_PWM_PIN, 25);
+  analogWrite(MOTOR_R_PWM_PIN, 25);
+  
+  //Both forward
+  Serial.print("forward");
+  Serial.println();
+  digitalWrite(MOTOR_L_DIR_PIN, LOW);
+  digitalWrite(MOTOR_R_DIR_PIN, LOW);
+
   delay(5000);
 
+  digitalWrite(MOTOR_L_SLP_PIN, LOW);
+  digitalWrite(MOTOR_R_SLP_PIN, LOW);
 
-  //Both forward
-  digitalWrite(MOTOR_L_DIR_PIN, 1);
-  digitalWrite(MOTOR_R_DIR_PIN, 1);
-  analogWrite(MOTOR_L_PWM_PIN, 50);
-  analogWrite(MOTOR_R_PWM_PIN, 50);
-
-  delay(10000);
-
-  //Both Backwards
-  digitalWrite(MOTOR_L_DIR_PIN, 0);
-  digitalWrite(MOTOR_R_DIR_PIN, 0);
-  analogWrite(MOTOR_L_PWM_PIN, 50);
-  analogWrite(MOTOR_R_PWM_PIN, 50);
-
-  delay(10000);
-
-  //Turn left
-  digitalWrite(MOTOR_R_DIR_PIN, 1);
-  digitalWrite(MOTOR_L_SLP_PIN, 1);
-  analogWrite(MOTOR_R_PWM_PIN, 50);
-  
-  delay(10000);
+  delay(5000);
 
   //Turn Right
-  digitalWrite(MOTOR_L_DIR_PIN, 1);
-  digitalWrite(MOTOR_R_SLP_PIN, 1);
-  analogWrite(MOTOR_R_PWM_PIN, 50);
+  Serial.print("right");
+  Serial.println();
+  digitalWrite(MOTOR_L_SLP_PIN, HIGH);
+  digitalWrite(MOTOR_R_SLP_PIN, HIGH);
+  analogWrite(MOTOR_R_PWM_PIN, 25);
+  analogWrite(MOTOR_L_PWM_PIN, 40);
+
+  delay(5000);
+
+  digitalWrite(MOTOR_L_SLP_PIN, LOW);
+  digitalWrite(MOTOR_R_SLP_PIN, LOW);
+
+  delay(5000);
+
+   
+  //Turn left
+  Serial.print("left");
+  Serial.println();
+  digitalWrite(MOTOR_L_SLP_PIN, HIGH);
+  digitalWrite(MOTOR_R_SLP_PIN, HIGH);
+  analogWrite(MOTOR_L_PWM_PIN, 25);
+  analogWrite(MOTOR_R_PWM_PIN, 40);
+  delay(5000);
+
+  digitalWrite(MOTOR_L_SLP_PIN, LOW);
+  digitalWrite(MOTOR_R_SLP_PIN, LOW);
 
   delay(5000);
 }
