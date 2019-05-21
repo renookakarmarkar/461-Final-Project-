@@ -1,3 +1,5 @@
+//Object Avoidance using one single ping sensor mounted at the front of the chassis. This was used for initial testing. 
+
 const int pingPin = 7;
 int objectDetected;
 void Distance_Init();
