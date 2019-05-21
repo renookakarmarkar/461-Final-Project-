@@ -1,3 +1,5 @@
+//Object avoidance algortithm using three ping sensors mounted at the front of the chassis. 
+
 const int pingPin = 7; //mid sensor is pin 7 -> P4.6
 const int pingPin1 = 10; //right sensor pin 10 ->P1.5 
 const int pingPin2 = 3; // left sensor pin 3 -> P3.2 
